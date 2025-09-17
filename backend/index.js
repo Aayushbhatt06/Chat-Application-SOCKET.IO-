@@ -1,0 +1,38 @@
+const express = require("express");
+require("dotenv");
+const app = express();
+const cors = require("cors");
+const mongoose = require("mongoose");
+const AuthRoutes = require("./Routes/AuthRoutes");
+const tokenRoute = require("./Routes/TokenValidRout");
+const apiRouter = require("./Routes/apiRouter");
+const http = require("http");
+const initializeSocket = require("./utils/socket");
+const msgRouter = require("./Routes/msgRoutes");
+require("./Models/db");
+
+const server = http.createServer(app);
+const port = process.env.PORT || 3000;
+
+initializeSocket(server);
+
+app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // allow your frontend
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true, // if you use cookies or auth headers
+  })
+);
+app.use("/auth", AuthRoutes);
+app.use("/verify", tokenRoute);
+app.use("/api/connections", apiRouter);
+app.use("/api/msg", msgRouter);
+
+app.get("/", (req, res) => {
+  res.send("Hello world");
+});
+
+server.listen(port, () => {
+  console.log(`Listening on Port ${port}`);
+});

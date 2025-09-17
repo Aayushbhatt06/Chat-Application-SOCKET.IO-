@@ -39,7 +39,7 @@ const Login = () => {
         onSubmit={handleOnSubmit}
         className="flex flex-col w-full max-w-sm p-14 bg-black/30 rounded-2xl shadow-lg"
       >
-        <h2 className="text-white text-3xl mb-5">SkillBarter</h2>
+        <h2 className="text-white text-3xl mb-5">Chat Application</h2>
         <div className="email mb-8">
           <label htmlFor="email" className="block mb-2 text-white">
             Email

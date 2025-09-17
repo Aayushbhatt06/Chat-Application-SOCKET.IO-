@@ -19,9 +19,9 @@ initializeSocket(server);
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173", // allow your frontend
+    origin: process.env.FRONTEND || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // if you use cookies or auth headers
+    credentials: true,
   })
 );
 app.use("/auth", AuthRoutes);

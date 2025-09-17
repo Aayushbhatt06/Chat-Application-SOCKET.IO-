@@ -23,8 +23,7 @@ const ChatSection = ({ connections, selected }) => {
     socket.emit("joinChat", { userId, targetUserId });
 
     socket.on("messageReceived", ({ sender, firstName, text }) => {
-      setMessages((prev) => [...prev, { sender, text }]);
-      console.log(firstName, ":", text);
+      setMessages((prev) => [...prev, { sender, text, time: Date.now() }]);
     });
 
     return () => {
@@ -61,7 +60,6 @@ const ChatSection = ({ connections, selected }) => {
   };
 
   const loadSelectedMessages = async (id) => {
-    console.log([id, userId].sort().join("_"));
     try {
       const res = await fetch(`${BACKEND_URL}/api/msg/load`, {
         method: "POST",
@@ -76,21 +74,27 @@ const ChatSection = ({ connections, selected }) => {
       if (!res.ok) {
         console.log(data);
       }
+      console.log(data.messages);
       setMessages(data.messages || []);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      sendMessage();
+    }
+  };
+
   useEffect(() => {
     if (!selected) return;
     loadSelectedMessages(selected);
-    console.log(messages);
   }, [selected]);
 
   return (
-    <div className="flex flex-col h-full w-full bg-gray-100 rounded-lg shadow-md">
-      <div className="heading bg-gray-700 text-white px-4 py-3 rounded-t-lg flex items-center justify-between">
+    <div className="flex flex-col h-full w-full bg-gray-100  shadow-md">
+      <div className="heading bg-gray-700 text-white px-4 py-3  flex items-center justify-between">
         <h1 className="text-lg font-semibold">
           {name ? name : "No Chat Selected"}
         </h1>
@@ -104,12 +108,18 @@ const ChatSection = ({ connections, selected }) => {
                 <div key={i} className="flex justify-end">
                   <div className="bg-blue-500 text-white px-4 py-2 rounded-lg max-w-xs">
                     {msg.text}
+                    <div className="text-gray-200 text-[10px] justify-end">
+                      <p>{new Date(msg.time).toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
               ) : (
                 <div key={i} className="flex justify-start">
                   <div className="bg-gray-300 text-black px-4 py-2 rounded-lg max-w-xs">
                     {msg.text}
+                    <div className="text-gray-800 text-[10px] justify-end">
+                      <p>{new Date(msg.time).toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
               )
@@ -132,6 +142,9 @@ const ChatSection = ({ connections, selected }) => {
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => {
+              handleKeyDown(e);
+            }}
             placeholder="Type a message..."
             className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />

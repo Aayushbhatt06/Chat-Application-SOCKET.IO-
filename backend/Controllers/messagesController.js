@@ -12,7 +12,6 @@ const loadMessages = async (req, res) => {
       });
     }
     const roomId = [userId, id].sort().join("_");
-    console.log(roomId);
     let chat = await chatModel.findOne({ roomId });
 
     if (!chat) {
@@ -35,7 +34,6 @@ const addMessage = async (req, res) => {
     const { id, text } = req.body;
     const userId = req.user._id;
     const roomId = [userId.toString(), id.toString()].sort().join("_");
-    console.log(text);
 
     let chat = await chatModel.findOne({ roomId });
 

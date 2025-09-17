@@ -21,15 +21,12 @@ const SearchUser = ({ setFusers }) => {
 
       if (!res.ok) {
         setError("No user found");
-        console.log("No user found");
         setFusers([]);
       } else {
-        console.log(data);
         setError("");
         setFusers(data);
       }
     } catch (err) {
-      console.log("Error fetching users:", err);
       setError("Something went wrong");
       setFusers([]);
     }

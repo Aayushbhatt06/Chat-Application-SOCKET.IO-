@@ -15,7 +15,6 @@ const Home = () => {
   useEffect(() => {
     if (connections.length > 0) {
       setSelected(connections[0]._id);
-      console.log(selected);
     }
   }, []);
 
@@ -78,23 +77,25 @@ const Home = () => {
   };
 
   const removeCon = async (conId) => {
-    const res = await fetch(`${BACKEND_URL}/api/connections/removecon`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ conId }),
-    });
+    let answer = confirm("Do you want Remove this connection?");
+    if (answer) {
+      const res = await fetch(`${BACKEND_URL}/api/connections/removecon`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ conId }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      alert("connection removed");
-    } else {
-      alert("Error removing the connection");
+      if (res.ok) {
+      } else {
+        alert("Error removing the connection");
+      }
+      window.location.reload();
     }
-    window.location.reload();
   };
 
   const rejectRequest = async (reqId) => {
@@ -139,7 +140,6 @@ const Home = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen text-black">
-      {/* Navbar */}
       <div className="navbar w-full p-3 sm:p-5 bg-gray-900 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0">
         <div className="heading text-lg sm:text-xl font-semibold text-white">
           Chatting Application
@@ -152,12 +152,12 @@ const Home = () => {
               {fusers.map((user) => (
                 <div
                   key={user._id}
-                  className="flex justify-between px-4 py-2 hover:bg-gray-100"
+                  className="flex justify-between px-4 py-2 hover:bg-gray-200"
                 >
                   <div>{user.name}</div>
                   <button
                     onClick={() => requestCon(user._id)}
-                    className="px-2 py-1 bg-blue-500 text-white rounded"
+                    className="px-2 py-1 bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600"
                   >
                     Request
                   </button>
@@ -181,9 +181,7 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="main flex flex-col sm:flex-row h-full w-full overflow-hidden">
-        {/* Connections */}
         <div className="connections w-full sm:w-1/3 p-2 sm:p-4 bg-black/10 overflow-y-auto">
           {/* Requests */}
           {requests.map((request) => (

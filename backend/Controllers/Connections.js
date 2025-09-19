@@ -1,4 +1,5 @@
 const User = require("../Models/User");
+const chat = require("../Models/ChatDb");
 
 const reqCon = async (req, res) => {
   try {
@@ -131,7 +132,7 @@ const removeCon = async (req, res) => {
   try {
     const { conId } = req.body;
     const userId = req.user._id.toString();
-
+    const roomId = [userId, conId].sort().join("_");
     // Prevent self-removal
     if (userId === conId.toString()) {
       return res.status(400).json({ message: "Cannot remove yourself" });
@@ -156,6 +157,7 @@ const removeCon = async (req, res) => {
 
     await user.save();
     await user1.save();
+    ch = await chat.findOneAndDelete({ roomId });
 
     if (
       prevLengthUser === user.connections.length &&

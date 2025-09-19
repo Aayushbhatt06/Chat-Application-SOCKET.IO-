@@ -38,7 +38,7 @@ const ChatSection = ({ connections, selected }) => {
     socketRef.current.emit("sendMessage", msg);
 
     try {
-      const res = await fetch(`/api/api/msg/newmessage`, {
+      const res = await fetch(`/api/message/newmessage`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,7 +61,7 @@ const ChatSection = ({ connections, selected }) => {
 
   const loadSelectedMessages = async (id) => {
     try {
-      const res = await fetch(`$/api/api/msg/load`, {
+      const res = await fetch(`$/api/message/msg/load`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

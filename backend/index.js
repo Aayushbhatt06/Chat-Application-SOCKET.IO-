@@ -26,8 +26,8 @@ app.use(
 );
 app.use("/auth", AuthRoutes);
 app.use("/verify", tokenRoute);
-app.use("/api/connections", apiRouter);
-app.use("/api/msg", msgRouter);
+app.use("/connections", apiRouter);
+app.use("/message", msgRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello world");

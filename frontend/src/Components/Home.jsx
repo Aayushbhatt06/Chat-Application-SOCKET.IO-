@@ -20,7 +20,7 @@ const Home = () => {
 
   const requestsfetch = async () => {
     try {
-      const res = await fetch(`/api/connections/getconreq`, {
+      const res = await fetch(`/api/api/connections/getconreq`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -34,7 +34,7 @@ const Home = () => {
 
   const requestCon = async (reqId) => {
     try {
-      const res = await fetch(`/api/connections/reqcon`, {
+      const res = await fetch(`/api/api/connections/reqcon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ const Home = () => {
 
   const acceptRequest = async (reqId) => {
     try {
-      const res = await fetch(`$/api/connections/acceptcon`, {
+      const res = await fetch(`/api/api/connections/acceptcon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -79,7 +79,7 @@ const Home = () => {
   const removeCon = async (conId) => {
     let answer = confirm("Do you want Remove this connection?");
     if (answer) {
-      const res = await fetch(`/api/connections/removecon`, {
+      const res = await fetch(`/api/api/connections/removecon`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ const Home = () => {
 
   const rejectRequest = async (reqId) => {
     try {
-      const res = await fetch(`/api/connections/rejectcon`, {
+      const res = await fetch(`/api/api/connections/rejectcon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ const Home = () => {
 
   const fetchConnections = async () => {
     try {
-      const res = await fetch(`/api/connections/getcon`, {
+      const res = await fetch(`/api/api/connections/getcon`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });

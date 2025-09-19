@@ -61,7 +61,7 @@ const ChatSection = ({ connections, selected }) => {
 
   const loadSelectedMessages = async (id) => {
     try {
-      const res = await fetch(`/api/message/msg/load`, {
+      const res = await fetch(`/api/message/load`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

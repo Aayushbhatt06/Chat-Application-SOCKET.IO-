@@ -1,9 +1,10 @@
-const socket = require("socket.io");
-require("dotenv");
+const { Server } = require("socket.io");
+require("dotenv").config();
+
 const initializeSocket = (server) => {
-  const io = socket(server, {
+  const io = new Server(server, {
     cors: {
-      origin: [import.meta.env.FRONTEND_URL, "http://localhost:5173"], // allow both local & deployed frontend
+      origin: [process.env.FRONTEND_URL, "http://localhost:5173"], // use process.env
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -14,6 +15,7 @@ const initializeSocket = (server) => {
       const roomId = [userId, targetUserId].sort().join("_");
       socket.join(roomId);
     });
+
     socket.on("sendMessage", ({ firstName, userId, targetUserId, text }) => {
       const roomId = [userId, targetUserId].sort().join("_");
       io.to(roomId).emit("messageReceived", {
@@ -22,7 +24,11 @@ const initializeSocket = (server) => {
         text,
       });
     });
-    socket.on("disconnect", () => {});
+
+    socket.on("disconnect", () => {
+      // you can log if needed
+      // console.log("User disconnected:", socket.id);
+    });
   });
 };
 

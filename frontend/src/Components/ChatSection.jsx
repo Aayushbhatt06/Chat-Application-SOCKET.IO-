@@ -21,7 +21,9 @@ const ChatSection = ({ connections, selected }) => {
 
     const socket = createSocketConnection();
     socketRef.current = socket;
-
+    socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err.message);
+    });
     socket.emit("joinChat", { userId, targetUserId });
 
     socket.on("messageReceived", ({ sender, firstName, text }) => {
@@ -39,10 +41,10 @@ const ChatSection = ({ connections, selected }) => {
 
     const msg = { firstName, userId, targetUserId, text: newMessage };
     socketRef.current.emit("sendMessage", msg);
-    setMessages((prev) => [
-      ...prev,
-      { sender: userId, text: newMessage, time: Date.now() },
-    ]);
+    // setMessages((prev) => [
+    //   ...prev,
+    //   { sender: userId, text: newMessage, time: Date.now() },
+    // ]);
 
     try {
       const res = await fetch(`${URL}/message/newmessage`, {

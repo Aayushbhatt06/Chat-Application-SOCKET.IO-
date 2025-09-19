@@ -8,8 +8,6 @@ const initializeSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    //Handle events
-
     socket.on("joinChat", ({ userId, targetUserId }) => {
       const roomId = [userId, targetUserId].sort().join("_");
       socket.join(roomId);

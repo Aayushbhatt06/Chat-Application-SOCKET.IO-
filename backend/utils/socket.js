@@ -3,7 +3,7 @@ require("dotenv");
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: "*",
+      origin: "http://3.108.61.73:3000",
     },
   });
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createSocketConnection } from "../../utils/socket";
+import { URL } from "../../utils/BaseUrl";
 
 const ChatSection = ({ connections, selected }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -11,6 +12,7 @@ const ChatSection = ({ connections, selected }) => {
   const userId = currentUser.id;
   const firstName = currentUser.name;
   const token = localStorage.getItem("authToken");
+  const messagesEndRef = useRef(null);
 
   const socketRef = useRef(null);
 
@@ -23,6 +25,7 @@ const ChatSection = ({ connections, selected }) => {
     socket.emit("joinChat", { userId, targetUserId });
 
     socket.on("messageReceived", ({ sender, firstName, text }) => {
+      console.log(text);
       setMessages((prev) => [...prev, { sender, text, time: Date.now() }]);
     });
 
@@ -36,9 +39,13 @@ const ChatSection = ({ connections, selected }) => {
 
     const msg = { firstName, userId, targetUserId, text: newMessage };
     socketRef.current.emit("sendMessage", msg);
+    setMessages((prev) => [
+      ...prev,
+      { sender: userId, text: newMessage, time: Date.now() },
+    ]);
 
     try {
-      const res = await fetch(`/api/message/newmessage`, {
+      const res = await fetch(`${URL}/message/newmessage`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -58,7 +65,7 @@ const ChatSection = ({ connections, selected }) => {
 
   const loadSelectedMessages = async (id) => {
     try {
-      const res = await fetch(`/api/message/load`, {
+      const res = await fetch(`${URL}/message/load`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,6 +91,12 @@ const ChatSection = ({ connections, selected }) => {
     if (!selected) return;
     loadSelectedMessages(selected);
   }, [selected]);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, selected]);
 
   return (
     <div className="flex flex-col h-full w-full bg-gray-100  shadow-md">
@@ -127,6 +140,7 @@ const ChatSection = ({ connections, selected }) => {
             Select a connection to start chatting
           </p>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {selected && (

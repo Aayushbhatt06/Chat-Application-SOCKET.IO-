@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { URL } from "../../utils/BaseUrl";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Signup = () => {
   const handleOnSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/auth/signup`, {
+      const res = await fetch(`${URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),

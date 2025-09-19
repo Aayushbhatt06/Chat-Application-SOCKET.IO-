@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { URL } from "../../utils/BaseUrl";
 export default function ProtectedRoute({ children }) {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ export default function ProtectedRoute({ children }) {
       }
 
       try {
-        const res = await fetch(`/api/verify/token`, {
+        const res = await fetch(`${URL}/verify/token`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

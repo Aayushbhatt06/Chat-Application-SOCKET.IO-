@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchUser from "./SearchUser";
 import ChatSection from "./ChatSection";
+import { URL } from "../../utils/BaseUrl";
 
 const Home = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -20,7 +21,7 @@ const Home = () => {
 
   const requestsfetch = async () => {
     try {
-      const res = await fetch(`/apiconnections/getconreq`, {
+      const res = await fetch(`${URL}/connections/getconreq`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -34,7 +35,7 @@ const Home = () => {
 
   const requestCon = async (reqId) => {
     try {
-      const res = await fetch(`/api/connections/reqcon`, {
+      const res = await fetch(`${URL}/connections/reqcon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -56,7 +57,7 @@ const Home = () => {
 
   const acceptRequest = async (reqId) => {
     try {
-      const res = await fetch(`/api/connections/acceptcon`, {
+      const res = await fetch(`${URL}/connections/acceptcon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -79,7 +80,7 @@ const Home = () => {
   const removeCon = async (conId) => {
     let answer = confirm("Do you want Remove this connection?");
     if (answer) {
-      const res = await fetch(`/api/connections/removecon`, {
+      const res = await fetch(`${URL}/connections/removecon`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -100,7 +101,7 @@ const Home = () => {
 
   const rejectRequest = async (reqId) => {
     try {
-      const res = await fetch(`/api/connections/rejectcon`, {
+      const res = await fetch(`${URL}/connections/rejectcon`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -121,7 +122,7 @@ const Home = () => {
 
   const fetchConnections = async () => {
     try {
-      const res = await fetch(`/api/connections/getcon`, {
+      const res = await fetch(`${URL}/connections/getcon`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });

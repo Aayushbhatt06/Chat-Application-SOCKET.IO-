@@ -49,12 +49,9 @@ const ChatSection = ({ connections, selected }) => {
 
       if (!res.ok) {
         const err = await res.json();
-        console.log(err);
         alert("Error sending");
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
 
     setNewMessage("");
   };
@@ -72,13 +69,9 @@ const ChatSection = ({ connections, selected }) => {
 
       const data = await res.json();
       if (!res.ok) {
-        console.log(data);
       }
-      console.log(data.messages);
       setMessages(data.messages || []);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const handleKeyDown = (e) => {

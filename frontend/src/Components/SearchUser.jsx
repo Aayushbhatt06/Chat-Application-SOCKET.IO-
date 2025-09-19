@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { URL } from "../../utils/BaseUrl";
 
 const SearchUser = ({ setFusers }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -9,7 +10,7 @@ const SearchUser = ({ setFusers }) => {
 
   const fetchUsersByName = async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/api/connections/finduser`, {
+      const res = await fetch(`${URL}/connections/finduser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

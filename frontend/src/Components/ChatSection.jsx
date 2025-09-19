@@ -27,7 +27,6 @@ const ChatSection = ({ connections, selected }) => {
     socket.emit("joinChat", { userId, targetUserId });
 
     socket.on("messageReceived", ({ sender, firstName, text }) => {
-      console.log(text);
       setMessages((prev) => [...prev, { sender, text, time: Date.now() }]);
     });
 

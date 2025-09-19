@@ -3,7 +3,7 @@ require("dotenv");
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: ["http://3.108.61.73", "http://localhost:5173"], // allow both local & deployed frontend
+      origin: [import.meta.env.FRONTEND_URL, "http://localhost:5173"], // allow both local & deployed frontend
       methods: ["GET", "POST"],
       credentials: true,
     },

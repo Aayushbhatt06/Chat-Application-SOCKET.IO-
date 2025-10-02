@@ -19,7 +19,11 @@ initializeSocket(server);
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://3.108.61.73", "http://localhost:5173"],
+    origin: [
+      "http://3.108.61.73",
+      "http://localhost:5173",
+      "https://chat-application-socket-io-nine.vercel.app/",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })

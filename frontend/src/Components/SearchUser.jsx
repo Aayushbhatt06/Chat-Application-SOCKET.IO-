@@ -10,7 +10,7 @@ const SearchUser = ({ setFusers }) => {
 
   const fetchUsersByName = async () => {
     try {
-      const res = await fetch(`${URL}/connections/finduser`, {
+      const res = await fetch(`${BACKEND_URL}/connections/finduser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

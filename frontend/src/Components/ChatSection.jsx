@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createSocketConnection } from "../../utils/socket";
-import { URL } from "../../utils/BaseUrl";
+// import { URL } from "../../utils/BaseUrl";
 
 const ChatSection = ({ connections, selected }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -46,7 +46,7 @@ const ChatSection = ({ connections, selected }) => {
     // ]);
 
     try {
-      const res = await fetch(`${URL}/message/newmessage`, {
+      const res = await fetch(`${BACKEND_URL}/message/newmessage`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +66,7 @@ const ChatSection = ({ connections, selected }) => {
 
   const loadSelectedMessages = async (id) => {
     try {
-      const res = await fetch(`${URL}/message/load`, {
+      const res = await fetch(`${BACKEND_URL}/message/load`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

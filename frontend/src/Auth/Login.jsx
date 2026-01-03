@@ -12,7 +12,7 @@ const Login = () => {
   const handleOnSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${URL}/auth/login`, {
+      const res = await fetch(`${BACKEND_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -26,7 +26,7 @@ const Login = () => {
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("userId", data.user.id);
-        navigate("/");
+        navigate("/home");
       }
     } catch (error) {
       console.error(error);

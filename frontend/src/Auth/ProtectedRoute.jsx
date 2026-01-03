@@ -15,7 +15,7 @@ export default function ProtectedRoute({ children }) {
       }
 
       try {
-        const res = await fetch(`${URL}/verify/token`, {
+        const res = await fetch(`${BACKEND_URL}/verify/token`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,

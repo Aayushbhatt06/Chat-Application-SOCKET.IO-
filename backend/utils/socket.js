@@ -18,6 +18,7 @@ const initializeSocket = (server) => {
 
     socket.on("sendMessage", ({ firstName, userId, targetUserId, text }) => {
       const roomId = [userId, targetUserId].sort().join("_");
+
       io.to(roomId).emit("messageReceived", {
         sender: userId,
         firstName,
@@ -25,9 +26,20 @@ const initializeSocket = (server) => {
       });
     });
 
+    socket.on("typing", ({ userId, targetUserId }) => {
+      const roomId = [userId, targetUserId].sort().join("_");
+      socket.to(roomId).emit("typing", { userId });
+    });
+
+    socket.on("stopTyping", ({ userId, targetUserId }) => {
+      const roomId = [userId, targetUserId].sort().join("_");
+      socket.to(roomId).emit("stopTyping", { userId });
+    });
+
     socket.on("disconnect", () => {
-      // you can log if needed
-      // console.log("User disconnected:", socket.id);
+      socket.rooms.forEach((roomId) => {
+        socket.to(roomId).emit("stopTyping", { userId: socket.id });
+      });
     });
   });
 };

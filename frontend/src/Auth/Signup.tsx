@@ -2,23 +2,35 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { URL } from "../../utils/BaseUrl";
 
-const Login = () => {
-  const navigate = useNavigate();
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+interface AuthResponse {
+  success: boolean;
+  message?: string;
+  token: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
 
-  const handleOnSubmit = async (e) => {
+const Signup: React.FC = () => {
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${BACKEND_URL}/auth/login`, {
+      const res = await fetch(`${BACKEND_URL}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await res.json();
+      const data: AuthResponse = await res.json();
 
       if (!res.ok || !data.success) {
         setError(data.message || "Signup failed");
@@ -41,6 +53,19 @@ const Login = () => {
         className="flex flex-col w-full max-w-sm p-14 bg-black/30 rounded-2xl shadow-lg"
       >
         <h2 className="text-white text-3xl mb-5">Chat Application</h2>
+
+        <div className="name mb-8">
+          <label htmlFor="name" className="block mb-2 text-white">
+            Name
+          </label>
+          <input
+            className="w-full p-2 rounded bg-white text-black"
+            type="text"
+            name="name"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+          />
+        </div>
+
         <div className="email mb-8">
           <label htmlFor="email" className="block mb-2 text-white">
             Email
@@ -49,9 +74,10 @@ const Login = () => {
             className="w-full p-2 rounded bg-white text-black"
             type="email"
             name="email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
           />
         </div>
+
         <div className="password mb-8">
           <label htmlFor="password" className="block mb-2 text-white">
             Password
@@ -60,25 +86,27 @@ const Login = () => {
             className="w-full p-2 rounded bg-white text-black"
             type="password"
             name="password"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
           />
         </div>
+
         {error && (
           <div className="text-red-500 font-semibold mb-4">{error}</div>
         )}
+
         <div className="submit">
           <button
             type="submit"
             className="cursor-pointer p-3 bg-[#f4a3a3] opacity-80 hover:opacity-100 text-black rounded-2xl"
           >
-            Login
+            Signup
           </button>
         </div>
         <div className="flex text-white font-bold mt-3">
-          <span>New User? </span>
+          <span>Already a User? </span>
           <button
             type="button"
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate("/login")}
             className="text-blue-200 underline ml-1"
           >
             click here
@@ -89,4 +117,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

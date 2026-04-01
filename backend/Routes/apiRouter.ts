@@ -1,15 +1,16 @@
-const router = require("express").Router();
-const {
+import { Router } from "express";
+import {
   reqCon,
   acceptCon,
   rejectCon,
   getCon,
   getConReq,
   removeCon,
-} = require("../Controllers/Connections");
-const LoggedInOnly = require("../Middlewares/LoggedInOnly");
-LoggedInOnly;
-const { fetchUsers, findUsers } = require("../Controllers/Users");
+} from "../Controllers/Connections.js";
+import LoggedInOnly from "../Middlewares/LoggedInOnly.js";
+import { fetchUsers, findUsers } from "../Controllers/Users.js";
+
+const router = Router();
 
 router.post("/reqcon", LoggedInOnly, reqCon);
 router.post("/acceptcon", LoggedInOnly, acceptCon);
@@ -20,4 +21,4 @@ router.get("/users", LoggedInOnly, fetchUsers);
 router.post("/finduser", LoggedInOnly, findUsers);
 router.post("/removecon", LoggedInOnly, removeCon);
 
-module.exports = router;
+export default router;

@@ -1,7 +1,17 @@
-import { useState, useEffect } from "react";
-import { URL } from "../../utils/BaseUrl";
+import React, { useState, useEffect } from "react";
+// import { URL } from "../../utils/BaseUrl";
 
-const SearchUser = ({ setFusers }) => {
+interface SearchUserProps {
+  setFusers: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
+interface User {
+  _id: string;
+  name: string;
+  email?: string;
+}
+
+const SearchUser: React.FC<SearchUserProps> = ({ setFusers }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const [name, setName] = useState("");
   const [error, setError] = useState("");
@@ -47,7 +57,7 @@ const SearchUser = ({ setFusers }) => {
         className="w-full outline-none bg-transparent"
         type="text"
         placeholder="Search User"
-        onChange={(e) => setName(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
       />
     </div>
   );

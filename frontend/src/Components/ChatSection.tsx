@@ -1,25 +1,42 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createSocketConnection } from "../../utils/socket";
+import { Socket } from "socket.io-client";
 
-const ChatSection = ({ connections, selected }) => {
+interface Connection {
+  _id: string;
+  name: string;
+}
+
+interface Message {
+  sender: string;
+  text: string;
+  time: number;
+}
+
+interface ChatSectionProps {
+  connections: Connection[];
+  selected: string | null;
+}
+
+const ChatSection: React.FC<ChatSectionProps> = ({ connections, selected }) => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   const name = connections.find((c) => c._id === selected)?.name;
   const targetUserId = connections.find((c) => c._id === selected)?._id;
 
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  const socketRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
-  const messagesEndRef = useRef(null);
+  const socketRef = useRef<Socket | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
   const token = localStorage.getItem("authToken");
 
-  const userId = currentUser?.id;
-  const firstName = currentUser?.name;
+  const userId: string | undefined = currentUser?.id;
+  const firstName: string | undefined = currentUser?.name;
 
   /* ---------------- SOCKET SETUP ---------------- */
   useEffect(() => {
@@ -30,19 +47,19 @@ const ChatSection = ({ connections, selected }) => {
 
     socket.emit("joinChat", { userId, targetUserId });
 
-    socket.on("messageReceived", ({ sender, text }) => {
+    socket.on("messageReceived", ({ sender, text }: { sender: string; text: string }) => {
       setMessages((prev) => [...prev, { sender, text, time: Date.now() }]);
     });
 
-    socket.on("typing", ({ userId: typingUser }) => {
+    socket.on("typing", ({ userId: typingUser }: { userId: string }) => {
       if (typingUser === targetUserId) setIsTyping(true);
     });
 
-    socket.on("stopTyping", ({ userId: typingUser }) => {
+    socket.on("stopTyping", ({ userId: typingUser }: { userId: string }) => {
       if (typingUser === targetUserId) setIsTyping(false);
     });
 
-    socket.on("connect_error", (err) => {
+    socket.on("connect_error", (err: Error) => {
       console.error("Socket error:", err.message);
     });
 
@@ -59,15 +76,17 @@ const ChatSection = ({ connections, selected }) => {
     if (newMessage.trim()) {
       socketRef.current.emit("typing", { userId, targetUserId });
 
-      clearTimeout(typingTimeoutRef.current);
+      clearTimeout(typingTimeoutRef.current!);
       typingTimeoutRef.current = setTimeout(() => {
-        socketRef.current.emit("stopTyping", { userId, targetUserId });
+        socketRef.current?.emit("stopTyping", { userId, targetUserId });
       }, 2000);
     } else {
       socketRef.current.emit("stopTyping", { userId, targetUserId });
     }
 
-    return () => clearTimeout(typingTimeoutRef.current);
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
   }, [newMessage, userId, targetUserId]);
 
   /* ---------------- SEND MESSAGE ---------------- */
@@ -100,7 +119,7 @@ const ChatSection = ({ connections, selected }) => {
   };
 
   /* ---------------- LOAD CHAT HISTORY ---------------- */
-  const loadSelectedMessages = async (id) => {
+  const loadSelectedMessages = async (id: string) => {
     try {
       const res = await fetch(`${BACKEND_URL}/message/load`, {
         method: "POST",
@@ -196,8 +215,8 @@ const ChatSection = ({ connections, selected }) => {
           <input
             type="text"
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewMessage(e.target.value)}
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === "Enter" && sendMessage()}
             placeholder="Type a message..."
             className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-base"
           />

@@ -1,30 +1,38 @@
-const User = require("../Models/User");
-const chat = require("../Models/ChatDb");
+import { Request, Response } from "express";
+import { Types } from "mongoose";
+import userModel from "../Models/User.js";
+import chatModel from "../Models/ChatDb.js";
 
-const reqCon = async (req, res) => {
+const reqCon = async (req: Request, res: Response): Promise<void> => {
   try {
     const { reqId } = req.body;
-    const userId = req.user._id;
+    const userId = req.user!._id as Types.ObjectId;
 
     // Prevent sending request to self
     if (reqId.toString() === userId.toString()) {
-      return res
+      res
         .status(400)
         .json({ message: "Cannot send request to yourself" });
+      return;
     }
 
-    const user = await User.findById(reqId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await userModel.findById(reqId);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
 
-    if (user.connections.includes(userId)) {
-      return res.status(400).json({ message: "Already connected" });
+    if (user.connections.some((id) => id.toString() === userId.toString())) {
+      res.status(400).json({ message: "Already connected" });
+      return;
     }
 
     if (user.conReq.some((r) => r.user.toString() === userId.toString())) {
-      return res.status(400).json({ message: "Request already sent" });
+      res.status(400).json({ message: "Request already sent" });
+      return;
     }
 
-    user.conReq.push({ user: userId });
+    user.conReq.push({ user: userId } as any);
     await user.save();
 
     res.status(200).json({ message: "Connection request sent" });
@@ -34,35 +42,40 @@ const reqCon = async (req, res) => {
   }
 };
 
-const acceptCon = async (req, res) => {
+const acceptCon = async (req: Request, res: Response): Promise<void> => {
   try {
     const { reqId } = req.body;
-    const userId = req.user._id;
+    const userId = req.user!._id as Types.ObjectId;
 
     if (reqId.toString() === userId.toString()) {
-      return res
+      res
         .status(400)
         .json({ message: "Cannot accept request from yourself" });
+      return;
     }
 
-    const user = await User.findById(userId);
-    const requester = await User.findById(reqId);
+    const user = await userModel.findById(userId);
+    const requester = await userModel.findById(reqId);
 
-    if (!user || !requester)
-      return res.status(404).json({ message: "User not found" });
+    if (!user || !requester) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
 
     if (user.connections.includes(reqId)) {
-      return res.status(400).json({ message: "Already connected" });
+      res.status(400).json({ message: "Already connected" });
+      return;
     }
 
     if (!user.conReq.some((r) => r.user.toString() === reqId)) {
-      return res
+      res
         .status(400)
         .json({ message: "No request found from this user" });
+      return;
     }
 
-    user.connections.push(reqId);
-    requester.connections.push(userId);
+    user.connections.push(reqId as any);
+    requester.connections.push(userId as any);
 
     user.conReq = user.conReq.filter((r) => r.user.toString() !== reqId);
 
@@ -76,18 +89,22 @@ const acceptCon = async (req, res) => {
   }
 };
 
-const rejectCon = async (req, res) => {
+const rejectCon = async (req: Request, res: Response): Promise<void> => {
   try {
     const { reqId } = req.body;
-    const userId = req.user._id;
+    const userId = req.user!._id as Types.ObjectId;
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const user = await userModel.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
 
     if (!user.conReq.some((r) => r.user.toString() === reqId)) {
-      return res
+      res
         .status(400)
         .json({ message: "No request found from this user" });
+      return;
     }
 
     user.conReq = user.conReq.filter((r) => r.user.toString() !== reqId);
@@ -100,13 +117,16 @@ const rejectCon = async (req, res) => {
   }
 };
 
-const getCon = async (req, res) => {
+const getCon = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const userId = req.user!._id as Types.ObjectId;
+    const user = await userModel.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
 
-    const connections = await User.find({
+    const connections = await userModel.find({
       _id: { $in: user.connections },
     }).select("name");
     res.status(200).json({ connections });
@@ -116,11 +136,14 @@ const getCon = async (req, res) => {
   }
 };
 
-const getConReq = async (req, res) => {
+const getConReq = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user._id;
-    const user = await User.findById(userId).populate("conReq.user", "name");
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const userId = req.user!._id as Types.ObjectId;
+    const user = await userModel.findById(userId).populate("conReq.user", "name");
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
     res.status(200).json({ conReq: user.conReq });
   } catch (error) {
     console.error(error);
@@ -128,21 +151,23 @@ const getConReq = async (req, res) => {
   }
 };
 
-const removeCon = async (req, res) => {
+const removeCon = async (req: Request, res: Response): Promise<void> => {
   try {
     const { conId } = req.body;
-    const userId = req.user._id.toString();
+    const userId = (req.user!._id as Types.ObjectId).toString();
     const roomId = [userId, conId].sort().join("_");
     // Prevent self-removal
     if (userId === conId.toString()) {
-      return res.status(400).json({ message: "Cannot remove yourself" });
+      res.status(400).json({ message: "Cannot remove yourself" });
+      return;
     }
 
-    const user = await User.findById(userId);
-    const user1 = await User.findById(conId);
+    const user = await userModel.findById(userId);
+    const user1 = await userModel.findById(conId);
 
     if (!user || !user1) {
-      return res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: "User not found" });
+      return;
     }
 
     const prevLengthUser = user.connections.length;
@@ -150,20 +175,21 @@ const removeCon = async (req, res) => {
 
     user.connections = user.connections.filter(
       (id) => id.toString() !== conId.toString()
-    );
+    ) as typeof user.connections;
     user1.connections = user1.connections.filter(
       (id) => id.toString() !== userId.toString()
-    );
+    ) as typeof user1.connections;
 
     await user.save();
     await user1.save();
-    ch = await chat.findOneAndDelete({ roomId });
+    const ch = await chatModel.findOneAndDelete({ roomId });
 
     if (
       prevLengthUser === user.connections.length &&
       prevLengthUser1 === user1.connections.length
     ) {
-      return res.status(400).json({ message: "Connection does not exist" });
+      res.status(400).json({ message: "Connection does not exist" });
+      return;
     }
 
     res.status(200).json({ message: "Connection removed" });
@@ -173,4 +199,4 @@ const removeCon = async (req, res) => {
   }
 };
 
-module.exports = { reqCon, acceptCon, rejectCon, getCon, getConReq, removeCon };
+export { reqCon, acceptCon, rejectCon, getCon, getConReq, removeCon };

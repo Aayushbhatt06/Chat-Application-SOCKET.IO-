@@ -14,7 +14,27 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ChatAppLanding = () => {
+interface Feature {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  gradient: string;
+}
+
+interface HowItWorksItem {
+  step: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+}
+
+interface TechStackItem {
+  name: string;
+  emoji: string;
+  color: string;
+}
+
+const ChatAppLanding: React.FC = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
@@ -27,7 +47,7 @@ const ChatAppLanding = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const features = [
+  const features: Feature[] = [
     {
       icon: <MessageCircle className="w-10 h-10" />,
       title: "Real-Time Messaging",
@@ -72,7 +92,7 @@ const ChatAppLanding = () => {
     },
   ];
 
-  const howItWorks = [
+  const howItWorks: HowItWorksItem[] = [
     {
       step: "1",
       title: "Sign Up",
@@ -99,7 +119,7 @@ const ChatAppLanding = () => {
     },
   ];
 
-  const benefits = [
+  const benefits: string[] = [
     "✓ Real-time message delivery with Socket.io",
     "✓ Connection request & acceptance system",
     "✓ One-on-one private conversations",
@@ -110,7 +130,7 @@ const ChatAppLanding = () => {
     "✓ Mobile responsive design",
   ];
 
-  const techStack = [
+  const techStack: TechStackItem[] = [
     { name: "MongoDB", emoji: "🍃", color: "text-green-400" },
     { name: "Express", emoji: "🚀", color: "text-blue-400" },
     { name: "React", emoji: "⚛️", color: "text-cyan-400" },
@@ -119,7 +139,7 @@ const ChatAppLanding = () => {
     { name: "Tailwind", emoji: "🎨", color: "text-cyan-400" },
   ];
 
-  const scrollToSection = (id) => {
+  const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -131,9 +151,8 @@ const ChatAppLanding = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
       {/* Navbar */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-white shadow-lg" : "bg-white/95 backdrop-blur-sm"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white shadow-lg" : "bg-white/95 backdrop-blur-sm"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -267,7 +286,9 @@ const ChatAppLanding = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-full text-lg font-bold shadow-2xl transition-all transform hover:scale-105 w-full sm:w-auto flex items-center justify-center gap-2">
+              <button onClick={() => {
+                navigate("/home")
+              }} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-full text-lg font-bold shadow-2xl transition-all transform hover:scale-105 w-full sm:w-auto flex items-center justify-center gap-2">
                 Start Chatting <ArrowRight className="w-5 h-5" />
               </button>
               <button className="bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 px-8 py-4 rounded-full text-lg font-bold shadow-lg transition-all transform hover:scale-105 w-full sm:w-auto">

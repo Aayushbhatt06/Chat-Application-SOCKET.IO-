@@ -1,16 +1,15 @@
-const express = require("express");
-require("dotenv");
-const app = express();
-const cors = require("cors");
-const mongoose = require("mongoose");
-const AuthRoutes = require("./Routes/AuthRoutes");
-const tokenRoute = require("./Routes/TokenValidRout");
-const apiRouter = require("./Routes/apiRouter");
-const http = require("http");
-const initializeSocket = require("./utils/socket");
-const msgRouter = require("./Routes/msgRoutes");
-require("./Models/db");
+import express from "express";
+import "dotenv/config";
+import cors from "cors";
+import AuthRoutes from "./Routes/AuthRoutes.js";
+import tokenRoute from "./Routes/TokenValidRout.js";
+import apiRouter from "./Routes/apiRouter.js";
+import http from "http";
+import initializeSocket from "./utils/socket.js";
+import msgRouter from "./Routes/msgRoutes.js";
+import "./Models/db.js";
 
+const app = express();
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;
 
@@ -37,6 +36,6 @@ app.get("/", (req, res) => {
   res.send("Hello world");
 });
 
-server.listen(port, "0.0.0.0", () => {
+server.listen(port, () => {
   console.log(`Listening on Port ${port}`);
 });

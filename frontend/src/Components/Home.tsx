@@ -2,16 +2,35 @@ import React, { useEffect, useState } from "react";
 import SearchUser from "./SearchUser";
 import ChatSection from "./ChatSection";
 
-const Home = () => {
+interface User {
+  _id: string;
+  name: string;
+  email?: string;
+}
+
+interface ConnectionRequest {
+  _id: string;
+  user: {
+    _id: string;
+    name: string;
+  };
+}
+
+interface Connection {
+  _id: string;
+  name: string;
+}
+
+const Home: React.FC = () => {
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("authToken");
-  const [fusers, setFusers] = useState([]);
+  const [fusers, setFusers] = useState<User[]>([]);
   const [error, setError] = useState("");
-  const [requests, setRequests] = useState([]);
-  const [connections, setConnections] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [requests, setRequests] = useState<ConnectionRequest[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
+  const [selected, setSelected] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
     if (connections.length > 0) {
@@ -29,11 +48,11 @@ const Home = () => {
       if (!res.ok) setError(data.message || "Error fetching requests");
       else setRequests(data.conReq || []);
     } catch (error) {
-      setError(error.message || "Something went wrong");
+      setError((error as Error).message || "Something went wrong");
     }
   };
 
-  const requestCon = async (reqId) => {
+  const requestCon = async (reqId: string) => {
     try {
       const res = await fetch(`${BACKEND_URL}/connections/reqcon`, {
         method: "POST",
@@ -51,11 +70,11 @@ const Home = () => {
       setError("");
       requestsfetch();
     } catch (error) {
-      setError(error.message || "Something went wrong");
+      setError((error as Error).message || "Something went wrong");
     }
   };
 
-  const acceptRequest = async (reqId) => {
+  const acceptRequest = async (reqId: string) => {
     try {
       const res = await fetch(`${BACKEND_URL}/connections/acceptcon`, {
         method: "POST",
@@ -73,11 +92,11 @@ const Home = () => {
         fetchConnections();
       }
     } catch (error) {
-      setError(error.message || "Something went wrong");
+      setError((error as Error).message || "Something went wrong");
     }
   };
 
-  const removeCon = async (conId) => {
+  const removeCon = async (conId: string) => {
     let answer = confirm("Do you want Remove this connection?");
     if (answer) {
       const res = await fetch(`${BACKEND_URL}/connections/removecon`, {
@@ -99,7 +118,7 @@ const Home = () => {
     }
   };
 
-  const rejectRequest = async (reqId) => {
+  const rejectRequest = async (reqId: string) => {
     try {
       const res = await fetch(`${BACKEND_URL}/connections/rejectcon`, {
         method: "POST",
@@ -116,7 +135,7 @@ const Home = () => {
         requestsfetch();
       }
     } catch (error) {
-      setError(error.message || "Something went wrong");
+      setError((error as Error).message || "Something went wrong");
     }
   };
 
@@ -130,7 +149,7 @@ const Home = () => {
       if (!res.ok) setError(data.message || "Error fetching connections");
       else setConnections(data.connections || []);
     } catch (error) {
-      setError(error.message || "Something went wrong");
+      setError((error as Error).message || "Something went wrong");
     }
   };
 
@@ -139,7 +158,7 @@ const Home = () => {
     fetchConnections();
   }, []);
 
-  const handleSelectConnection = (connectionId) => {
+  const handleSelectConnection = (connectionId: string) => {
     setSelected(connectionId);
     setShowSidebar(false); // Close sidebar on mobile after selection
   };
@@ -250,7 +269,7 @@ const Home = () => {
               >
                 <div className="mx-1">{connection.name}</div>
                 <button
-                  onClick={(e) => {
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                     e.stopPropagation();
                     removeCon(connection._id);
                   }}
@@ -357,7 +376,7 @@ const Home = () => {
                     >
                       <div className="font-medium mb-2">{connection.name}</div>
                       <button
-                        onClick={(e) => {
+                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                           e.stopPropagation();
                           removeCon(connection._id);
                         }}

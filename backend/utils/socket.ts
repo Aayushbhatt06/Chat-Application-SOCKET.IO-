@@ -1,22 +1,40 @@
-const { Server } = require("socket.io");
-require("dotenv").config();
+import { Server } from "socket.io";
+import "dotenv/config";
+import http from "http";
 
-const initializeSocket = (server) => {
+interface JoinChatData {
+  userId: string;
+  targetUserId: string;
+}
+
+interface SendMessageData {
+  firstName: string;
+  userId: string;
+  targetUserId: string;
+  text: string;
+}
+
+interface TypingData {
+  userId: string;
+  targetUserId: string;
+}
+
+const initializeSocket = (server: http.Server): void => {
   const io = new Server(server, {
     cors: {
-      origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
+      origin: [process.env.FRONTEND_URL as string, "http://localhost:5173"],
       methods: ["GET", "POST"],
       credentials: true,
     },
   });
 
   io.on("connection", (socket) => {
-    socket.on("joinChat", ({ userId, targetUserId }) => {
+    socket.on("joinChat", ({ userId, targetUserId }: JoinChatData) => {
       const roomId = [userId, targetUserId].sort().join("_");
       socket.join(roomId);
     });
 
-    socket.on("sendMessage", ({ firstName, userId, targetUserId, text }) => {
+    socket.on("sendMessage", ({ firstName, userId, targetUserId, text }: SendMessageData) => {
       const roomId = [userId, targetUserId].sort().join("_");
 
       io.to(roomId).emit("messageReceived", {
@@ -26,12 +44,12 @@ const initializeSocket = (server) => {
       });
     });
 
-    socket.on("typing", ({ userId, targetUserId }) => {
+    socket.on("typing", ({ userId, targetUserId }: TypingData) => {
       const roomId = [userId, targetUserId].sort().join("_");
       socket.to(roomId).emit("typing", { userId });
     });
 
-    socket.on("stopTyping", ({ userId, targetUserId }) => {
+    socket.on("stopTyping", ({ userId, targetUserId }: TypingData) => {
       const roomId = [userId, targetUserId].sort().join("_");
       socket.to(roomId).emit("stopTyping", { userId });
     });
@@ -44,4 +62,4 @@ const initializeSocket = (server) => {
   });
 };
 
-module.exports = initializeSocket;
+export default initializeSocket;

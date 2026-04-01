@@ -1,9 +1,12 @@
-const check = (req, res) => {
+import { Request, Response } from "express";
+
+const check = (req: Request, res: Response): void => {
   if (!req.user) {
-    return res.status(401).json({
+    res.status(401).json({
       message: "Unauthorized: No user found",
       success: false,
     });
+    return;
   }
 
   res.status(200).json({
@@ -13,4 +16,4 @@ const check = (req, res) => {
   });
 };
 
-module.exports = check;
+export default check;
